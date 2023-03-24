@@ -1,35 +1,40 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get_storage/get_storage.dart';
 
 class UserDashBoard extends StatelessWidget {
   UserDashBoard({super.key});
 
-  TextEditingController productNameController = TextEditingController();
-  TextEditingController nameController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
+  // TextEditingController productNameController = TextEditingController();
+  // TextEditingController nameController = TextEditingController();
+  // TextEditingController addressController = TextEditingController();
+  // TextEditingController phoneController = TextEditingController();
 
-  Future sendData() async {
-    final db = await FirebaseFirestore.instance.collection("Order-info").add({
-      "ProductName": productNameController.text,
-      "UserName": nameController.text,
-      "address": addressController.text,
-      "phoneNumber": phoneController.text,
-      "orderID": phoneController.text.substring(7, phoneController.text.length),
-      "status": "pending",
-    });
+  // Future sendData() async {
+  //   final db = await FirebaseFirestore.instance.collection("Order-info").add({
+  //     "ProductName": productNameController.text,
+  //     "UserName": nameController.text,
+  //     "address": addressController.text,
+  //     "phoneNumber": phoneController.text,
+  //     "orderID": phoneController.text.substring(7, phoneController.text.length),
+  //     "status": "pending",
+  //   });
 
-    final userdb =
-        await FirebaseFirestore.instance.collection("User-info").add({
-      "UserName": nameController.text,
-      "address": addressController.text,
-      "phoneNumber": phoneController.text,
-    });
-  }
+  //   final userdb =
+  //       await FirebaseFirestore.instance.collection("User-info").add({
+  //     "UserName": nameController.text,
+  //     "address": addressController.text,
+  //     "phoneNumber": phoneController.text,
+  //   });
+  // }
+
+  final auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
+    final box = GetStorage();
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
@@ -40,103 +45,39 @@ class UserDashBoard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                height: 60,
-                width: screenWidth,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 1,
-                    color: Colors.black,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: TextField(
-                    controller: productNameController,
-                    decoration: InputDecoration(
-                      hintText: "Enter Product Name",
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
+              StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('User-info')
+                    .where("uid", isEqualTo: auth.currentUser!.uid)
+                    .snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, i) {
+                        var finalData = snapshot.data!.docs[i];
+                        return Column(
+                          children: [
+                            Text(finalData["name"]),
+                            Text(
+                                "Mail Name:  ${auth.currentUser!.displayName}"),
+                            Text(finalData["phone"]),
+                            Text(auth.currentUser!.email.toString()),
+                            ElevatedButton(
+                                onPressed: () {
+                                  print(box.read('email'));
+                                },
+                                child: Text("read data"))
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    return CircularProgressIndicator();
+                  }
+                },
               ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                height: 60,
-                width: screenWidth,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 1,
-                    color: Colors.black,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: TextField(
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      hintText: "Enter Your Name",
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                height: 60,
-                width: screenWidth,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 1,
-                    color: Colors.black,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: TextField(
-                    controller: addressController,
-                    decoration: InputDecoration(
-                      hintText: "Enter Address",
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                height: 60,
-                width: screenWidth,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 1,
-                    color: Colors.black,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: TextField(
-                    controller: phoneController,
-                    decoration: InputDecoration(
-                      hintText: "Enter Number",
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              ElevatedButton(
-                  onPressed: () {
-                    sendData();
-                  },
-                  child: Text("Submit Oder"))
             ],
           ),
         ),

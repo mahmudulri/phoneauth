@@ -38,6 +38,8 @@ dependencies:
   firebase_database: ^10.0.16
   cloud_firestore: ^4.4.5
   get: ^4.6.5
+  google_sign_in: ^6.0.2
+  get_storage:
 
 dev_dependencies:
   flutter_test:

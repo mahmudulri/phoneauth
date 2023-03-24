@@ -1,31 +1,71 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:phone_auth/pages/dashboard.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
-class Homepage extends StatelessWidget {
+class Homepage extends StatefulWidget {
   Homepage({super.key});
 
-  FirebaseAuth _auth = FirebaseAuth.instance;
+  @override
+  State<Homepage> createState() => _HomepageState();
+}
+
+class _HomepageState extends State<Homepage> {
+  // FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   TextEditingController phoneController = TextEditingController();
 
-  phoneAuth() async {
-    await _auth.verifyPhoneNumber(
-      phoneNumber: phoneController.text,
-      timeout: Duration(seconds: 60),
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        var result = await _auth.signInWithCredential(credential);
-        var user = result.user;
-        if (user != null) {
-          Get.to(() => UserDashBoard());
+  // Future sendData() async {
+  //   final db = await FirebaseFirestore.instance.collection("User-info").add({
+  //     "mailAddress": "",
+  //     "Name": "",
+  //     "address": "",
+  //     "phoneNumber": "",
+  //   });
+  // }
+
+  Future<bool?> signInWithGoogle() async {
+    bool result = false;
+    final box = GetStorage();
+
+    try {
+      GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+
+      AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      User? user = userCredential.user;
+
+      if (userCredential.user != null) {
+        if (userCredential.additionalUserInfo!.isNewUser) {
+          await _firestore.collection("User-info").doc(user!.email).set({
+            "name": "Mahmudul Hasan",
+            "uid": user.uid,
+            "phone": "01701987948",
+            "email": user.email,
+          });
+          box.write('email', user.email);
+          print(box.read('email'));
         }
-      },
-      verificationFailed: (FirebaseAuthException exception) async {
-        print(exception.toString());
-      },
-      codeSent: (String verificationID, int? resendToken) {},
-      codeAutoRetrievalTimeout: (String verificationId) {},
-    );
+        result = true;
+        box.write('email', "already_signged_in");
+
+        Get.to(() => UserDashBoard());
+      }
+      return result;
+    } catch (e) {
+      print(e);
+    }
+    return result;
   }
 
   @override
@@ -40,34 +80,16 @@ class Homepage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                height: 60,
-                width: screenWidth,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 1,
-                    color: Colors.black,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: TextField(
-                    controller: phoneController,
-                    decoration: InputDecoration(
-                      hintText: "Enter Number",
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-              ),
               SizedBox(
                 height: 20,
               ),
               ElevatedButton(
                   onPressed: () {
-                    phoneAuth();
+                    setState(() {
+                      signInWithGoogle();
+                    });
                   },
-                  child: Text("Sign Up Now"))
+                  child: Text("Sign in with Google"))
             ],
           ),
         ),
