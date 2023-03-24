@@ -35,21 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return SafeArea(
         child: Scaffold(
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {},
-              child: Text("Write Data"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                print(box.read('quote'));
-              },
-              child: Text("Read Data"),
-            ),
-          ],
-        ),
+        child: Text("Loading...."),
       ),
     ));
   }

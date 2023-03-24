@@ -32,6 +32,8 @@ class UserDashBoard extends StatelessWidget {
 
   final auth = FirebaseAuth.instance;
 
+  final database = FirebaseFirestore.instance;
+
   @override
   Widget build(BuildContext context) {
     final box = GetStorage();
@@ -39,47 +41,58 @@ class UserDashBoard extends StatelessWidget {
     var screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
         child: Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('User-info')
-                    .where("uid", isEqualTo: auth.currentUser!.uid)
-                    .snapshots(),
-                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, i) {
-                        var finalData = snapshot.data!.docs[i];
-                        return Column(
-                          children: [
-                            Text(finalData["name"]),
-                            Text(
-                                "Mail Name:  ${auth.currentUser!.displayName}"),
-                            Text(finalData["phone"]),
-                            Text(auth.currentUser!.email.toString()),
-                            ElevatedButton(
-                                onPressed: () {
-                                  print(box.read('email'));
-                                },
-                                child: Text("read data"))
-                          ],
-                        );
-                      },
-                    );
-                  } else {
-                    return CircularProgressIndicator();
-                  }
+      drawer: Drawer(
+        child: Column(
+          children: [
+            StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('User-info')
+                  .where("uid", isEqualTo: auth.currentUser!.uid)
+                  .snapshots(),
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, i) {
+                      var finalData = snapshot.data!.docs[i];
+                      return Column(
+                        children: [
+                          Text(finalData["name"]),
+                          Text("Mail Name:  ${auth.currentUser!.displayName}"),
+                          Text(finalData["phone"]),
+                          Text(auth.currentUser!.email.toString()),
+                        ],
+                      );
+                    },
+                  );
+                } else {
+                  return CircularProgressIndicator();
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+      appBar: AppBar(),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: StreamBuilder(
+          stream:
+              FirebaseFirestore.instance.collection("categories").snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Text("Loading");
+            } else {
+              return ListView.builder(
+                itemCount: snapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  DocumentSnapshot finalData = snapshot.data!.docs[index];
+                  return Text(finalData["name"]);
                 },
-              ),
-            ],
-          ),
+              );
+            }
+          },
         ),
       ),
     ));
