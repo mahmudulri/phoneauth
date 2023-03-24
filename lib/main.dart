@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:phone_auth/splash_screen.dart';
 
 import 'pages/dashboard.dart';
+import 'pages/productpage.dart';
 
 void main() async {
   GetStorage.init();
@@ -26,6 +27,6 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: SplashScreen());
+        home: ProductPage());
   }
 }

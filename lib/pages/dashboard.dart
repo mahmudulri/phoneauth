@@ -79,18 +79,49 @@ class UserDashBoard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 40),
         child: StreamBuilder(
           stream:
-              FirebaseFirestore.instance.collection("categories").snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Text("Loading");
-            } else {
+              FirebaseFirestore.instance.collection('categories').snapshots(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasData) {
               return ListView.builder(
+                shrinkWrap: true,
                 itemCount: snapshot.data!.docs.length,
                 itemBuilder: (context, index) {
-                  DocumentSnapshot finalData = snapshot.data!.docs[index];
-                  return Text(finalData["name"]);
+                  // var finalData = snapshot.data!.docs[i];
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          height: screenHeight * 0.20,
+                          width: screenWidth,
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                snapshot.data!.docs[index]["name"],
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Image.network(
+                                snapshot.data!.docs[index]["image_url"],
+                                height: 120,
+                                width: 150,
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
                 },
               );
+            } else {
+              return CircularProgressIndicator();
             }
           },
         ),
