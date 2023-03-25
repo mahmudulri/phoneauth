@@ -2,7 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:phone_auth/pages/productpage.dart';
 
 class UserDashBoard extends StatelessWidget {
   UserDashBoard({super.key});
@@ -78,50 +80,52 @@ class UserDashBoard extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40),
         child: StreamBuilder(
-          stream:
-              FirebaseFirestore.instance.collection('categories').snapshots(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.hasData) {
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  // var finalData = snapshot.data!.docs[i];
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
+          stream: FirebaseFirestore.instance
+              .collection('allcategories')
+              .snapshots(),
+          builder: (context,
+              AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+            if (snapshot.hasData && snapshot.data != null) {
+              if (snapshot.data!.docs.isNotEmpty) {
+                return ListView.builder(
+                  itemBuilder: (BuildContext context, int index) {
+                    String name =
+                        snapshot.data!.docs.elementAt(index).get("catName");
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          Get.to(() => ProductPage(
+                                categoryName: name,
+                              ));
+                        },
                         child: Container(
-                          height: screenHeight * 0.20,
+                          height: 100,
                           width: screenWidth,
                           decoration: BoxDecoration(
                             color: Colors.green,
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Column(
-                            children: [
-                              Text(
-                                snapshot.data!.docs[index]["name"],
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                          child: Center(
+                            child: Text(
+                              name,
+                              style: TextStyle(
+                                fontSize: 25,
+                                color: Colors.white,
                               ),
-                              Image.network(
-                                snapshot.data!.docs[index]["image_url"],
-                                height: 120,
-                                width: 150,
-                              )
-                            ],
+                            ),
                           ),
                         ),
                       ),
-                    ],
-                  );
-                },
-              );
+                    );
+                  },
+                  itemCount: snapshot.data!.docs.length,
+                );
+              } else {
+                return Text("No data");
+              }
             } else {
-              return CircularProgressIndicator();
+              return Text("No data");
             }
           },
         ),
