@@ -5,16 +5,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:phone_auth/newpages/new_products_page.dart';
 import 'package:phone_auth/pages/productpage.dart';
 
-class UserDashBoard extends StatefulWidget {
-  UserDashBoard({super.key});
+class NewUserDashBoard extends StatefulWidget {
+  NewUserDashBoard({super.key});
 
   @override
-  State<UserDashBoard> createState() => _UserDashBoardState();
+  State<NewUserDashBoard> createState() => _NewUserDashBoardState();
 }
 
-class _UserDashBoardState extends State<UserDashBoard> {
+class _NewUserDashBoardState extends State<NewUserDashBoard> {
   final auth = FirebaseAuth.instance;
 
   final database = FirebaseFirestore.instance;
@@ -170,66 +171,133 @@ class _UserDashBoardState extends State<UserDashBoard> {
         elevation: 0.0,
         backgroundColor: Colors.blue,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-        child: Column(
-          children: [
-            Expanded(
-              child: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('allcategories')
-                    .snapshots(),
-                builder: (context,
-                    AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
-                        snapshot) {
-                  if (snapshot.hasData && snapshot.data != null) {
-                    if (snapshot.data!.docs.isNotEmpty) {
-                      return ListView.builder(
-                        itemBuilder: (BuildContext context, int index) {
-                          String name = snapshot.data!.docs
-                              .elementAt(index)
-                              .get("catName");
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                Get.to(() => ProductPage(
-                                      categoryName: name,
-                                    ));
-                              },
-                              child: Container(
-                                height: 100,
-                                width: screenWidth,
-                                decoration: BoxDecoration(
-                                  color: Colors.green,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    name,
-                                    style: TextStyle(
-                                      fontSize: 25,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GestureDetector(
+              onTap: () {
+                Get.to(() => NewProductpage());
+              },
+              child: Container(
+                height: 180,
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  image: DecorationImage(
+                    image: AssetImage(
+                      "assets/images/mens.png",
+                    ),
+                    fit: BoxFit.fill,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(60.0),
+                  child: Container(
+                    color: Colors.black.withOpacity(0.5),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Mens Items",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
                             ),
-                          );
-                        },
-                        itemCount: snapshot.data!.docs.length,
-                      );
-                    } else {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                  } else {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+
+          ///   2nd.......................//2nd
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: 180,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                image: DecorationImage(
+                  image: AssetImage(
+                    "assets/images/mens.png",
+                  ),
+                  fit: BoxFit.fill,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(60.0),
+                child: Container(
+                  color: Colors.black.withOpacity(0.5),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Womens Item",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: 180,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                image: DecorationImage(
+                  image: AssetImage(
+                    "assets/images/mens.png",
+                  ),
+                  fit: BoxFit.fill,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(60.0),
+                child: Container(
+                  color: Colors.black.withOpacity(0.5),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Household Item	",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     ));
   }

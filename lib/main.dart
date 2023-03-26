@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:phone_auth/pages/homepage.dart';
+import 'package:phone_auth/pages/loginpage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:phone_auth/splash_screen.dart';
 
+import 'newpages/new_products_page.dart';
 import 'pages/dashboard.dart';
 import 'pages/productpage.dart';
 
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
+        title: 'Fresh Clothes',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),

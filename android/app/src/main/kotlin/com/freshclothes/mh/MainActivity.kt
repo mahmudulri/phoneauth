@@ -1,4 +1,4 @@
-package com.example.phone_auth
+package com.freshclothes.mh
 
 import io.flutter.embedding.android.FlutterActivity
 
