@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:phone_auth/model/cart_model.dart';
+import 'package:phone_auth/newpages/add_cart_page.dart';
 
 import '../helpers/database_helper.dart';
 
@@ -15,16 +17,16 @@ class NewProductpage extends StatefulWidget {
 class _NewProductpageState extends State<NewProductpage> {
   var _cartList;
   int _quantity = 0;
-  @override
-  initState() {
-    setState(() {
-      _cartList = DatabaseHelper.instance.getCartMapList();
-    });
+  // @override
+  // initState() {
+  //   setState(() {
+  //     _cartList = DatabaseHelper.instance.getCartMapList();
+  //   });
 
-    _cartList.forEach((row) => print(row));
+  //   _cartList.forEach((row) => print(row));
 
-    super.initState();
-  }
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +59,7 @@ class _NewProductpageState extends State<NewProductpage> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return CircularProgressIndicator();
+                  return Center(child: CircularProgressIndicator());
                 } else {
                   return ListView.builder(
                     physics: BouncingScrollPhysics(),
@@ -65,98 +67,113 @@ class _NewProductpageState extends State<NewProductpage> {
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.grey,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Container(
-                                    height: 80,
-                                    child: Image.asset(
-                                        "assets/images/mens_cat.png"),
+                        child: GestureDetector(
+                          onTap: () {
+                            Get.to(
+                              () => AddCartPage(
+                                productName: snapshot
+                                    .data!.docs[index]["productName"]
+                                    .toString(),
+                                price: snapshot.data!.docs[index]["price"]
+                                    .toString(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.grey,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: Container(
+                                      height: 80,
+                                      child: Image.asset(
+                                          "assets/images/mens_cat.png"),
+                                    ),
                                   ),
-                                ),
-                                Expanded(
-                                  flex: 3,
-                                  child: Container(
-                                    height: 80,
-                                    // color: Colors.grey,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 10, horizontal: 5),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                  Expanded(
+                                    flex: 3,
+                                    child: Container(
+                                      height: 80,
+                                      // color: Colors.grey,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 5),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              snapshot.data!.docs[index]
+                                                  ["productName"],
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            Text(
+                                              "BDT : ${snapshot.data!.docs[index]["price"]}.00",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Container(
+                                      height: 80,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(
-                                            snapshot.data!.docs[index]
-                                                ["productName"],
-                                            style: TextStyle(
-                                              fontSize: 15,
+                                          Container(
+                                            decoration: BoxDecoration(
                                               color: Colors.white,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Icon(Icons.remove),
                                             ),
                                           ),
-                                          Text(
-                                            "BDT : ${snapshot.data!.docs[index]["price"]}.00",
-                                            style: TextStyle(
-                                              fontSize: 12,
+                                          Container(
+                                            height: 20,
+                                            width: 20,
+                                            child: Text(
+                                              "${_quantity}",
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            decoration: BoxDecoration(
                                               color: Colors.white,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Icon(Icons.add),
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
                                   ),
-                                ),
-                                Expanded(
-                                  flex: 3,
-                                  child: Container(
-                                    height: 80,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Icon(Icons.remove),
-                                          ),
-                                        ),
-                                        Container(
-                                          height: 20,
-                                          width: 20,
-                                          child: Text(
-                                            "${_quantity}",
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Icon(Icons.add),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),

@@ -1,75 +1,74 @@
-import 'dart:io';
-
-import 'package:path_provider/path_provider.dart';
-import 'package:phone_auth/model/cart_model.dart';
+import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-class DatabaseHelper {
-  static final DatabaseHelper instance = DatabaseHelper._instance();
-  static Database? _db;
+import '../model/cart_model.dart';
 
-  DatabaseHelper._instance();
+class CartDatabase {
+  static final CartDatabase instance = CartDatabase._init();
 
-  String cartTable = 'Cart_table';
-  String colId = 'id';
-  String product_name = 'product_name';
-  String product_quentity = 'product_quentity';
-  String total_price = 'total_price';
-  String per_unit_price = 'per_unit_price';
+  static Database? _database;
 
-  Future<Database> get db async {
-    _db ??= await _initDb();
-    return _db!;
+  CartDatabase._init();
+
+  Future<Database> get database async {
+    if (_database != null) return _database!;
+
+    _database = await _initDB('cart.db');
+    return _database!;
   }
 
-  Future<Database> _initDb() async {
-    Directory dir = await getApplicationDocumentsDirectory();
-    String path = dir.path + 'cart_list.db';
-    final cartListDb =
-        await openDatabase(path, version: 1, onCreate: _createDb);
-    return cartListDb;
+  Future<Database> _initDB(String filePath) async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, filePath);
+
+    return await openDatabase(path, version: 1, onCreate: _createDB);
   }
 
-  void _createDb(Database db, int version) async {
-    await db.execute(
-        'CREATE TABLE $cartTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $product_name TEXT, $product_quentity INTEGER, $total_price DOUBLE, $per_unit_price DOUBLE)');
+  Future<void> _createDB(Database db, int version) async {
+    await db.execute('''
+      CREATE TABLE cart_items(
+        id INTEGER PRIMARY KEY,
+        name TEXT,
+        price REAL,
+        quantity INTEGER
+      )
+    ''');
   }
 
-  Future<List<Map<String, dynamic>>> getCartMapList() async {
-    Database db = await this.db;
-    final List<Map<String, dynamic>> result = await db.query(cartTable);
-    return result;
+  Future<CartItem> addItem(CartItem item) async {
+    final db = await instance.database;
+
+    final id = await db.insert('cart_items', item.toMap());
+
+    return item;
   }
 
-  Future<List<Cart>> getCartList() async {
-    final List<Map<String, dynamic>> cartMapList = await getCartMapList();
-    final List<Cart> cartList = [];
-    cartMapList.forEach((cartMap) {
-      cartList.add(Cart.formMap(cartMap));
+  Future<List<CartItem>> getItems() async {
+    final db = await instance.database;
+
+    final maps = await db.query('cart_items');
+
+    return List.generate(maps.length, (i) {
+      return CartItem.fromMap(maps[i]);
     });
-
-    //cartList.sort((CartA, CartB) => CartA.date.compareTo(CartB.date));
-
-    return cartList;
   }
 
-  Future<int> insertCart(Cart Cart) async {
-    Database db = await this.db;
-    final int result = await db.insert(cartTable, Cart.toMap());
-    return result;
+  Future<void> removeItem(int id) async {
+    final db = await instance.database;
+
+    await db.delete('cart_items', where: 'id = ?', whereArgs: [id]);
   }
 
-  Future<int> updateCart(Cart cart) async {
-    Database db = await this.db;
-    final int result = await db.update(cartTable, cart.toMap(),
-        where: '$colId=?', whereArgs: [cart.id]);
-    return result;
-  }
+  Future<double> getTotalPrice() async {
+    final db = await instance.database;
 
-  Future<int> deleteCart(int id) async {
-    Database db = await this.db;
-    final int result =
-        await db.delete(cartTable, where: '$colId=?', whereArgs: [id]);
-    return result;
+    final result = await db
+        .rawQuery('SELECT SUM(price * quantity) as total FROM cart_items');
+
+    if (result.isNotEmpty) {
+      return result.first['total'] as double;
+    } else {
+      return 0.0;
+    }
   }
 }

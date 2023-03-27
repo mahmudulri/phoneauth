@@ -28,10 +28,8 @@ class _NewUserDashBoardState extends State<NewUserDashBoard> {
   // }
 
   // checkProfile() {
-  //   print(box.read('name'));
-  //   if (box.read('name') == "noname") {
-  //     print("please enter your name");
-  //   }
+  //  box.write("userKey", value)
+
   // }
 
   @override
@@ -51,6 +49,7 @@ class _NewUserDashBoardState extends State<NewUserDashBoard> {
                   .where("uid", isEqualTo: auth.currentUser!.uid)
                   .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                box.write("userKey", auth.currentUser!.uid.toString());
                 if (snapshot.hasData) {
                   return ListView.builder(
                     shrinkWrap: true,
@@ -297,6 +296,14 @@ class _NewUserDashBoardState extends State<NewUserDashBoard> {
               ),
             ),
           ),
+
+          ElevatedButton(
+            onPressed: () {
+              print(box.read("userKey"));
+            },
+            child: Text("Print User key"),
+          ),
+          Text(box.read("userKey"))
         ],
       ),
     ));

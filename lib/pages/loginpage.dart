@@ -64,6 +64,7 @@ class _LoginPageState extends State<LoginPage> {
         }
         result = true;
         box.write('email', "already_signged_in");
+        box.write("userKey", user!.uid.toString());
 
         Get.to(() => NewUserDashBoard());
       }
