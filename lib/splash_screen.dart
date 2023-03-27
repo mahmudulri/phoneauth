@@ -6,6 +6,7 @@ import 'package:phone_auth/pages/dashboard.dart';
 import 'package:phone_auth/pages/loginpage.dart';
 import 'package:lottie/lottie.dart';
 
+import 'base/bottomnav.dart';
 import 'newpages/new_dashboard.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -24,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (userMail == null) {
       Get.to(() => LoginPage());
     } else {
-      Get.to(() => NewUserDashBoard());
+      Get.to(() => BottomNavPage());
     }
   }
 

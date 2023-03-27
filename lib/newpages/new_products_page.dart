@@ -184,38 +184,6 @@ class _NewProductpageState extends State<NewProductpage> {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 1),
-            child: Container(
-              height: 80,
-              width: screenWidth,
-              decoration: BoxDecoration(
-                color: Colors.black,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    Text(
-                      "Items : 12",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                      ),
-                    ),
-                    Spacer(),
-                    Text(
-                      "Total Price : 1200" " tk",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     ));

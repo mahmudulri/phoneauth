@@ -8,6 +8,7 @@ import 'package:phone_auth/pages/dashboard.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 
+import '../base/bottomnav.dart';
 import '../newpages/new_dashboard.dart';
 
 class LoginPage extends StatefulWidget {
@@ -66,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
         box.write('email', "already_signged_in");
         box.write("userKey", user!.uid.toString());
 
-        Get.to(() => NewUserDashBoard());
+        Get.to(() => BottomNavPage());
       }
       return result;
     } catch (e) {
@@ -81,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
     var screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
         child: Scaffold(
-      backgroundColor: Color(0xff34495e),
+      backgroundColor: Colors.blue,
       body: Padding(
         padding:
             EdgeInsets.symmetric(horizontal: screenWidth * 0.10, vertical: 40),
