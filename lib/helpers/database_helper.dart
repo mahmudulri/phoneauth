@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -64,11 +65,36 @@ class CartDatabase {
 
     final result = await db
         .rawQuery('SELECT SUM(price * quantity) as total FROM cart_items');
+    //print(result);
+    if (result == null) {
+      print("null");
+    }
 
     if (result.isNotEmpty) {
-      return result.first['total'] as double;
+      //return result.first['total'] as double;
+      if (result.first['total'] != null) {
+        return result.first['total'] as double;
+      } else {
+        return 0.0;
+      }
     } else {
       return 0.0;
     }
+  }
+
+  Future<void> clearTable() async {
+    final db = await instance.database;
+    await db.delete('cart_items');
+  }
+
+  Future<List<Map<String, dynamic>>> items() async {
+    final db = await instance.database;
+    return await db.query('cart_items');
+  }
+
+  Future<int> totalItems() async {
+    final db = await instance.database;
+    var result = await db.rawQuery("SELECT SUM(quantity) FROM cart_items");
+    return Sqflite.firstIntValue(result) ?? 0;
   }
 }

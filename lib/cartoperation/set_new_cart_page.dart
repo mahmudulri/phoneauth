@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -8,22 +9,22 @@ import 'package:get_storage/get_storage.dart';
 import 'package:phone_auth/helpers/database_helper.dart';
 import 'package:phone_auth/model/cart_model.dart';
 
-import 'view_my_cart.dart';
+import 'view_my_new_cart.dart';
 
-class AddCartPage extends StatefulWidget {
+class SetNewCart extends StatefulWidget {
   String? productName;
   String? price;
 
-  AddCartPage({
+  SetNewCart({
     required this.productName,
     required this.price,
   });
 
   @override
-  State<AddCartPage> createState() => _AddCartPageState();
+  State<SetNewCart> createState() => _SetNewCartState();
 }
 
-class _AddCartPageState extends State<AddCartPage> {
+class _SetNewCartState extends State<SetNewCart> {
   // double totalPrice = 0.0;
 
   final box = GetStorage();
@@ -39,7 +40,7 @@ class _AddCartPageState extends State<AddCartPage> {
         child: Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-        title: Text("Add cart"),
+        title: Text("Add cart new page"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -147,12 +148,7 @@ class _AddCartPageState extends State<AddCartPage> {
             ),
             ElevatedButton(
                 onPressed: () {
-                  if (counter <= 0) {
-                    print("add at least one");
-                  } else {
-                    _submitData(widget.productName, counter, widget.price);
-                    // print(CartDatabase.instance.getTotalPrice().toString());
-                  }
+                  saveData();
                 },
                 child: Text("Add to cart")),
             SizedBox(
@@ -160,7 +156,7 @@ class _AddCartPageState extends State<AddCartPage> {
             ),
             ElevatedButton(
               onPressed: () async {
-                Get.to(() => ViewMyCart());
+                Get.to(() => ViewMyNewCart());
               },
               child: Text("View My cart"),
             ),
@@ -170,15 +166,30 @@ class _AddCartPageState extends State<AddCartPage> {
     ));
   }
 
-  _submitData(String? productName, int i, String? price) async {
-    final item = CartItem(
-        name: productName.toString(),
-        price: double.parse(price.toString()),
-        quantity: i);
+  Future<void> saveData() async {
+    try {
+      await FirebaseFirestore.instance.collection('draft_user_cart').add({
+        "id": box.read("userKey"),
+        "productName": widget.productName.toString(),
+        "finalprice": finalPrice,
+        "quantity": counter,
+      });
 
-    await CartDatabase.instance.addItem(item);
-    await box.write("allprice", await CartDatabase.instance.getTotalPrice());
-
-    print(await CartDatabase.instance.getTotalPrice());
+      Get.snackbar(
+        "Status",
+        "Your data has been saved",
+        colorText: Colors.white,
+        backgroundColor: Colors.blueGrey,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Something went wrong ..... try again",
+        colorText: Colors.white,
+        backgroundColor: Colors.red,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 }

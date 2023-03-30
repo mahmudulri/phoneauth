@@ -7,6 +7,8 @@ import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phone_auth/newpages/new_products_page.dart';
 import 'package:phone_auth/pages/productpage.dart';
+import 'package:marquee/marquee.dart';
+import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 
 class NewUserDashBoard extends StatefulWidget {
   NewUserDashBoard({super.key});
@@ -20,17 +22,33 @@ class _NewUserDashBoardState extends State<NewUserDashBoard> {
 
   final database = FirebaseFirestore.instance;
   final box = GetStorage();
+  var allList;
 
-  // @override
-  // void initState() {
-  //   checkProfile();
-  //   super.initState();
-  // }
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
 
   // checkProfile() {
   //  box.write("userKey", value)
 
   // }
+
+  Future<void> getData() async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection("allorders")
+        .where('uid', isEqualTo: box.read("userKey").toString())
+        .get();
+
+    allList = querySnapshot.docs.map((doc) => doc.data()).toList();
+
+    // for (int i = 0; i < allList.length; i++) {
+    //   totalPrice = totalPrice + int.parse(allList[i]["finalprice"].toString());
+    // }
+
+    // isFetching.value = false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -173,14 +191,149 @@ class _NewUserDashBoardState extends State<NewUserDashBoard> {
 
       body: Column(
         children: [
+          Container(
+            height: 80,
+            width: screenWidth,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
+              // color: Color(0xff3498db),
+              color: Colors.grey,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: screenHeight * 0.010,
+                  ),
+                  Container(
+                    height: 30,
+                    child: Marquee(
+                      text: 'Notice from admin in here for all users',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      scrollAxis: Axis.horizontal,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      blankSpace: 20.0,
+                      velocity: 50.0,
+                      pauseAfterRound: Duration(seconds: 1),
+                      startPadding: 10.0,
+                      accelerationDuration: Duration(seconds: 1),
+                      accelerationCurve: Curves.linear,
+                      decelerationDuration: Duration(milliseconds: 500),
+                      decelerationCurve: Curves.easeOut,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          SizedBox(
+            height: 30,
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: GestureDetector(
               onTap: () {
                 Get.to(() => NewProductpage());
               },
+              child: ClipPath(
+                clipper: SideCutClipper(),
+                child: Container(
+                  height: 150,
+                  decoration: BoxDecoration(
+                    color: Colors.lightBlueAccent,
+                    image: DecorationImage(
+                      image: AssetImage(
+                        "assets/images/mens.png",
+                      ),
+                      fit: BoxFit.fill,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: Container(
+                      color: Colors.black.withOpacity(0.5),
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Mens Items",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          ///   2nd.......................//2nd
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ClipPath(
+              clipper: SideCutClipper(),
               child: Container(
-                height: 180,
+                height: 150,
+                decoration: BoxDecoration(
+                  color: Colors.purpleAccent,
+                  image: DecorationImage(
+                    image: AssetImage(
+                      "assets/images/womens.png",
+                    ),
+                    fit: BoxFit.fill,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: Container(
+                    color: Colors.black.withOpacity(0.5),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Womens Item",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ClipPath(
+              clipper: SideCutClipper(),
+              child: Container(
+                height: 150,
                 decoration: BoxDecoration(
                   color: Colors.grey,
                   image: DecorationImage(
@@ -192,7 +345,7 @@ class _NewUserDashBoardState extends State<NewUserDashBoard> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(60.0),
+                  padding: const EdgeInsets.all(30.0),
                   child: Container(
                     color: Colors.black.withOpacity(0.5),
                     child: Padding(
@@ -202,7 +355,7 @@ class _NewUserDashBoardState extends State<NewUserDashBoard> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            "Mens Items",
+                            "Household Item	",
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 24.0,
@@ -218,93 +371,13 @@ class _NewUserDashBoardState extends State<NewUserDashBoard> {
             ),
           ),
 
-          ///   2nd.......................//2nd
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              height: 180,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                image: DecorationImage(
-                  image: AssetImage(
-                    "assets/images/mens.png",
-                  ),
-                  fit: BoxFit.fill,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(60.0),
-                child: Container(
-                  color: Colors.black.withOpacity(0.5),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Womens Item",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              height: 180,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                image: DecorationImage(
-                  image: AssetImage(
-                    "assets/images/mens.png",
-                  ),
-                  fit: BoxFit.fill,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(60.0),
-                child: Container(
-                  color: Colors.black.withOpacity(0.5),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Household Item	",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          ElevatedButton(
-            onPressed: () {
-              print(box.read("userKey"));
-            },
-            child: Text("Print User key"),
-          ),
-          Text(box.read("userKey"))
+          // ElevatedButton(
+          //   onPressed: () {
+          //     print(box.read("userKey"));
+          //   },
+          //   child: Text("Print User key"),
+          // ),
+          // Text(box.read("userKey"))
         ],
       ),
     ));
